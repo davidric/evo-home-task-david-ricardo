@@ -31,6 +31,7 @@ yarn start:prod
 ## Level Password Obtained
 
 1. Level 1 - `JustWarmingUp`
+2. Level 2 - `DefinitelyWarm`
 ---
 ## Technologies
 
