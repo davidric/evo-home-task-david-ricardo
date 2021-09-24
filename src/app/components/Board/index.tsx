@@ -3,12 +3,29 @@
  * Board
  *
  */
-import React, { memo, useEffect, useRef, useState, useLayoutEffect, useMemo } from 'react';
+import React, {
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
 import { Canvas, Vector3 } from '@react-three/fiber';
 import { Pipe } from '../Pipe';
 import { Clouds } from '../Clouds';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
-import { Button, Box, Snackbar, Fab, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import {
+  Button,
+  Box,
+  Snackbar,
+  Fab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { getPipeName, getPipeRotation } from '../../utils/translatePipe';
 import { OrbitControls } from '@react-three/drei';
@@ -69,15 +86,14 @@ export const Board = memo((props: Props) => {
           z: 2.5,
           duration: 1.5,
           delay: 2,
-          ease: 'back'
-        })
-  
+          ease: 'back',
+        });
+
         return () => {
           cameraAnimation.kill();
           levelAnimation.kill();
         };
       }
-
     }
   }, [pipeList]);
 
@@ -87,12 +103,11 @@ export const Board = memo((props: Props) => {
         x: -100,
         stagger: 0.1,
       });
-      
+
       return () => {
         btnAnimation.kill();
       };
-      
-    }  else {
+    } else {
       const fabAnimation = gsap.to(qMenus('.btnMenu'), {
         x: 100,
         stagger: 0.1,
@@ -101,14 +116,12 @@ export const Board = memo((props: Props) => {
       return () => {
         fabAnimation.kill();
       };
-
     }
-
   }, [expandMenu]);
 
   function onSendWSCommand(command: string) {
     client.send(command);
-    client.onmessage = (message) => {
+    client.onmessage = message => {
       const data = message.data;
       console.log('message: ', data);
       console.log(data + '\n-------\n');
@@ -123,7 +136,7 @@ export const Board = memo((props: Props) => {
         rows.pop();
 
         let tempPipeList: PipeModel[] = [];
-      
+
         if (rows.length > 0) {
           const totalRows = rows.length;
           const totalColumn = rows[0].length;
@@ -136,7 +149,7 @@ export const Board = memo((props: Props) => {
                 name: getPipeName(col),
                 position: getPipePosition(totalRows, totalColumn, i, j),
                 rotate: getPipeRotation(col),
-                arrIndex:  getArrayIndex(i, j),
+                arrIndex: getArrayIndex(i, j),
               });
               pipeIndex++;
             });
@@ -157,14 +170,19 @@ export const Board = memo((props: Props) => {
     };
   }
 
-  function getPipePosition(totalRows: number, totalColumn: number, currentRow: number, currentColumn: number): Vector3 {
+  function getPipePosition(
+    totalRows: number,
+    totalColumn: number,
+    currentRow: number,
+    currentColumn: number,
+  ): Vector3 {
     // Get first pipe position
     const pipeGap = 0.85;
-    let pipeX = -(totalColumn * pipeGap / 2);
-    let pipeY = totalRows * pipeGap / 2;
+    let pipeX = -((totalColumn * pipeGap) / 2);
+    let pipeY = (totalRows * pipeGap) / 2;
     // Get current pipe position
-    pipeX = pipeX + (pipeGap * currentColumn);
-    pipeY = pipeY - (pipeGap * currentRow);
+    pipeX = pipeX + pipeGap * currentColumn;
+    pipeY = pipeY - pipeGap * currentRow;
 
     const pipePosition = new THREE.Vector3(pipeX, pipeY, 0);
     return pipePosition;
@@ -180,57 +198,124 @@ export const Board = memo((props: Props) => {
     setLevel(`Level ${level}`);
   }
 
-  return(
+  return (
     <>
-    { pipeList.length > 0 ? <h3 ref={refLevel} className="levelText">{level}</h3> : null}
+      {pipeList.length > 0 ? (
+        <h3 ref={refLevel} className="levelText">
+          {level}
+        </h3>
+      ) : null}
 
-    { socketOpen ?
-    <Fab onClick={() => setExpandMenu(!expandMenu)} color="primary" aria-label="add" style={{position: 'absolute', top: 15, right: 15, zIndex: 2}}>
-      <SettingsIcon/>
-    </Fab> : null}
+      {socketOpen ? (
+        <Fab
+          onClick={() => setExpandMenu(!expandMenu)}
+          color="primary"
+          aria-label="add"
+          style={{ position: 'absolute', top: 15, right: 15, zIndex: 2 }}
+        >
+          <SettingsIcon />
+        </Fab>
+      ) : null}
 
-    <div ref={refMenus} style={{display: 'block', position: 'absolute', zIndex: 2, right: -100, top: 90}}>
-      <Box p={1}>
-        <Button variant="contained" className="btnMenu" onClick={() => goToLevel(1)}>LEVEL 1</Button>
-      </Box>
-      <Box p={1}>
-        <Button variant="contained" className="btnMenu" onClick={() => goToLevel(2)}>LEVEL 2</Button>
-      </Box>
-      <Box p={1}>
-        <Button variant="contained" className="btnMenu" onClick={() => goToLevel(3)}>LEVEL 3</Button>
-      </Box>
-      <Box p={1}>
-        <Button variant="contained" className="btnMenu" onClick={() => onSendWSCommand('verify')}>VERIFY</Button>
-      </Box>
-    </div>
+      <div
+        ref={refMenus}
+        style={{
+          display: 'block',
+          position: 'absolute',
+          zIndex: 2,
+          right: -100,
+          top: 90,
+        }}
+      >
+        <Box p={1}>
+          <Button
+            variant="contained"
+            className="btnMenu"
+            onClick={() => goToLevel(1)}
+          >
+            LEVEL 1
+          </Button>
+        </Box>
+        <Box p={1}>
+          <Button
+            variant="contained"
+            className="btnMenu"
+            onClick={() => goToLevel(2)}
+          >
+            LEVEL 2
+          </Button>
+        </Box>
+        <Box p={1}>
+          <Button
+            variant="contained"
+            className="btnMenu"
+            onClick={() => goToLevel(3)}
+          >
+            LEVEL 3
+          </Button>
+        </Box>
+        <Box p={1}>
+          <Button
+            variant="contained"
+            className="btnMenu"
+            onClick={() => onSendWSCommand('verify')}
+          >
+            VERIFY
+          </Button>
+        </Box>
+      </div>
 
-    <Snackbar
-      open={incorrect}
-      autoHideDuration={6000}
-      onClose={() => setIncorrect(false)}
-      message="Incorrect!"
-      // action={action}
-    >
-      <Alert severity="error" sx={{ width: '100%' }}>
-        Incorrect!
-      </Alert>
-    </Snackbar>
+      <Snackbar
+        open={incorrect}
+        autoHideDuration={6000}
+        onClose={() => setIncorrect(false)}
+        message="Incorrect!"
+        // action={action}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          Incorrect!
+        </Alert>
+      </Snackbar>
 
-    <ModalPopup open={openModal} level={level} password={levelPassword} handleClose={() => setOpenModal(false)}  />
+      <ModalPopup
+        open={openModal}
+        level={level}
+        password={levelPassword}
+        handleClose={() => setOpenModal(false)}
+      />
 
-    <Clouds />
-    
-    <Canvas>
-      <pointLight args={['#ffffff', 1.4, 500]} position={[0,15,15]} />
-      <OrbitControls minDistance={3} maxDistance={35} maxAzimuthAngle={Math.PI / 4} minZoom={2} maxZoom={3} enableRotate={false} enableZoom={true} mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 2 }} />
-      <perspectiveCamera ref={camera} position={[0.35, -0.5, 0]}>
-        {
-          pipeList.map((data, key) => {
-            return <Pipe key={key} name={data.name} position={data.position} rotate={data.rotate} arrIndex={data.arrIndex} handleRotate={(value: string) => onSendWSCommand(`rotate ${value}`)} />
-          })
-        }
-      </perspectiveCamera>
-    </Canvas>
+      <Clouds />
+
+      <Canvas>
+        <pointLight args={['#ffffff', 1.4, 500]} position={[0, 15, 15]} />
+        <OrbitControls
+          minDistance={3}
+          maxDistance={35}
+          maxAzimuthAngle={Math.PI / 4}
+          minZoom={2}
+          maxZoom={3}
+          enableRotate={false}
+          enableZoom={true}
+          mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 2 }}
+          touches={{ ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_ROTATE }}
+        />
+        <perspectiveCamera ref={camera} position={[0.35, -0.5, 0]}>
+          {pipeList.map((data, key) => {
+            return (
+              <Pipe
+                key={key}
+                name={data.name}
+                position={data.position}
+                rotate={data.rotate}
+                arrIndex={data.arrIndex}
+                handleRotate={(value: string) =>
+                  onSendWSCommand(`rotate ${value}`)
+                }
+              />
+            );
+          })}
+        </perspectiveCamera>
+      </Canvas>
     </>
   );
 });
@@ -243,9 +328,7 @@ const ModalPopup = (props: ModalProps) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">
-        Congratulations!
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">Congratulations!</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           You pass {props.level}. Here is the password: <b>{props.password}</b>
@@ -258,6 +341,9 @@ const ModalPopup = (props: ModalProps) => {
   );
 };
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
